@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpongeBob Platformer</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #87CEEB; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const gravity = 0.5;
+  const groundY = canvas.height - 100;
+
+  const spongebob = {
+    x: 100,
+    y: groundY - 100,
+    width: 60,
+    height: 60,
+    color: "yellow",
+    vy: 0,
+    jumping: false,
+    sayFunnyThing() {
+      const lines = [
+        "I'm ready!",
+        "Is mayonnaise an instrument?",
+        "I'm ugly and I'm proud!",
+        "I'm a Goofy Goober, yeah!"
+      ];
+      const line = lines[Math.floor(Math.random() * lines.length)];
+      alert(line);
+    }
+  };
+
+  const keys = {};
+
+  window.addEventListener("keydown", e => {
+    keys[e.key] = true;
+    if (e.key === " " && !spongebob.jumping) {
+      spongebob.vy = -12;
+      spongebob.jumping = true;
+      spongebob.sayFunnyThing();
+    }
+  });
+
+  window.addEventListener("keyup", e => {
+    keys[e.key] = false;
+  });
+
+  function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Move
+    if (keys["ArrowRight"] || keys["d"]) spongebob.x += 5;
+    if (keys["ArrowLeft"] || keys["a"]) spongebob.x -= 5;
+
+    // Gravity
+    spongebob.y += spongebob.vy;
+    spongebob.vy += gravity;
+
+    // Ground collision
+    if (spongebob.y + spongebob.height > groundY) {
+      spongebob.y = groundY - spongebob.height;
+      spongebob.vy = 0;
+      spongebob.jumping = false;
+    }
+
+    // Draw ground
+    ctx.fillStyle = "#228B22";
+    ctx.fillRect(0, groundY, canvas.width, 100);
+
+    // Draw SpongeBob (placeholder block)
+    ctx.fillStyle = spongebob.color;
+    ctx.fillRect(spongebob.x, spongebob.y, spongebob.width, spongebob.height);
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+</script>
+</body>
+</html>
